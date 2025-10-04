@@ -28,7 +28,7 @@ async function loadPost() {
   if (!file) return;
 
   try {
-    const res = await fetch(`posts/${file}`);
+    const res = await fetch(`./posts/${file}`);
     const text = await res.text();
     const html = marked.parse(text);
     document.getElementById("post-container").innerHTML = html;
@@ -60,7 +60,7 @@ async function loadPost() {
   if (!file) return;
 
   try {
-    const res = await fetch(`posts/${file}`);
+    const res = await fetch(`./posts/${file}`);
     const text = await res.text();
     const html = marked.parse(text);
     document.getElementById("post-container").innerHTML = html;

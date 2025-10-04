@@ -162,7 +162,7 @@ a:hover {
 
 /* ダークモード時に画像を差し替える */
 .dark-mode #logo-img {
-  content: url("images/d_slp.png");
+  content: url("./images/d_slp.png");
 }
 
 #x-logo {
