@@ -20,12 +20,21 @@
         <span class="material-icons emoji" id="theme">dark_mode</span>
       </nav>
     </header>
-    <a href="./index.html">← 一覧に戻る</a>
+    <a href="./index.html">< 一覧に戻る</a>
     <div id="post-container">読み込み中...</div>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <a id="share-btn" class="share-btn" target="_blank" rel="noopener noreferrer">
       <img id="x-logo" src="./images/d_x.png" alt="Xで共有"> Xで共有
     </a>
+    <div id="comments"></div>
     <script src="./script.js"></script>
+    <script src="https://utteranc.es/client.js"
+        repo="5l3ep/sl3ep.site"
+        issue-term="pathname"
+        label="💬 Comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+    </script>
   </body>
 </html>

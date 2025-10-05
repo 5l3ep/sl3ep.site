@@ -76,33 +76,45 @@ async function loadPost() {
 }
 
 
-const icon = document.querySelector("#theme");
+const themeButton = document.querySelector('#theme');
 
-// テーマを適用する関数
+// テーマ適用関数
 function applyTheme(theme) {
   if (theme === 'dark') {
     document.body.classList.add('dark-mode');
-    icon.textContent = 'light_mode';
+    themeButton.textContent = 'light_mode';
   } else {
     document.body.classList.remove('dark-mode');
-    icon.textContent = 'dark_mode';
+    themeButton.textContent = 'dark_mode';
   }
 }
 
-// 初期テーマの決定: localStorage -> prefers-color-scheme -> light
-const storedTheme = localStorage.getItem('theme');
-if (storedTheme === 'dark' || storedTheme === 'light') {
-  applyTheme(storedTheme);
-} else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-  applyTheme('dark');
-} else {
-  applyTheme('light');
-}
+// 初期化（localStorage → OS設定）
+window.addEventListener('DOMContentLoaded', () => {
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme) {
+    applyTheme(savedTheme);
+  } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    applyTheme('dark');
+  } else {
+    applyTheme('light');
+  }
+});
 
-// クリックでトグル、選択を localStorage に保存
-icon.addEventListener('click', () => {
-  const isDark = document.body.classList.toggle('dark-mode');
-  const theme = isDark ? 'dark' : 'light';
-  localStorage.setItem('theme', theme);
-  applyTheme(theme);
+// クリックでテーマ切り替え＋保存＋再読み込み
+themeButton.addEventListener('click', () => {
+  const isDark = !document.body.classList.contains('dark-mode');
+  const newTheme = isDark ? 'dark' : 'light';
+  localStorage.setItem('theme', newTheme);
+  applyTheme(newTheme);
+
+  // コメント欄含めて再読み込み（確実にutterancesも反映）
+  location.reload();
+});
+
+
+// ページ読み込み時にテーマを復元
+window.addEventListener('DOMContentLoaded', () => {
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') document.body.classList.add('dark-mode');
 });
