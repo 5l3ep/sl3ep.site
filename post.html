@@ -27,14 +27,20 @@
       <img id="x-logo" src="./images/d_x.png" alt="Xで共有"> Xで共有
     </a>
     <div id="comments"></div>
-    <script src="./script.js"></script>
-    <script src="https://utteranc.es/client.js"
-        repo="5l3ep/sl3ep.site"
-        issue-term="pathname"
-        label="💬 Comment"
-        theme="github-light"
-        crossorigin="anonymous"
-        async>
+    <script>
+    const params = new URLSearchParams(location.search);
+    const file = params.get("file") || "no-file";
+    const theme = document.body.classList.contains('dark-mode') ? 'github-dark' : 'github-light';
+    const script = document.createElement("script");
+    script.src = "https://utteranc.es/client.js";
+    script.async = true;
+    script.crossOrigin = "anonymous";
+    script.setAttribute("repo", "あなたのGitHubユーザー名/リポジトリ名");
+    script.setAttribute("issue-term", file); // ← ファイル名ごとにコメントを分ける！
+    script.setAttribute("label", "💬 comment");
+    script.setAttribute("theme", theme);
+    document.querySelector("#comments").appendChild(script);
     </script>
+    <script src="./script.js"></script>
   </body>
 </html>
