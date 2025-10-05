@@ -17,7 +17,7 @@ header {
   position: fixed;
   top: 0;
   left: 0;
-  height: 10vh;
+  height: 70px;
   padding: 0.5rem 4rem;
   display: flex;
   gap: 1rem; /* ヘッダー内の要素間にスペースを追加 */
