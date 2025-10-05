@@ -1,6 +1,13 @@
 [
-    {
-    "title": "好きな曲紹介",
+  {
+    "title": "ブログにコメント機能を追加してみた",
+    "file": "blogcomment.md",
+    "date": "2025-10-05",
+    "tags": ["技術系", "JS"],
+    "thumbnail": "./images/3rd_tn.jpg"
+  },
+  {
+    "title": "好きな曲の紹介",
     "file": "favsong.md",
     "date": "2025-10-04",
     "tags": ["好きな曲", "自己紹介"],

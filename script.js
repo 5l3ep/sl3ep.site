@@ -1,6 +1,11 @@
-// URLでどのページか判定
+// =========================
+// ページ判定
+// =========================
 const isPostPage = location.pathname.includes("post.html");
 
+// =========================
+// 投稿一覧ページの処理
+// =========================
 async function loadPosts() {
   const res = await fetch("posts.json");
   const posts = await res.json();
@@ -20,8 +25,9 @@ async function loadPosts() {
   `).join("");
 }
 
-
-// 記事を読み込む
+// =========================
+// 個別記事ページの処理
+// =========================
 async function loadPost() {
   const params = new URLSearchParams(location.search);
   const file = params.get("file");
@@ -32,89 +38,96 @@ async function loadPost() {
     const text = await res.text();
     const html = marked.parse(text);
     document.getElementById("post-container").innerHTML = html;
+
+    // タイトルをMarkdownの1行目から取得
+    const titleMatch = text.match(/^#\s*(.+)/m);
+    const title = titleMatch ? titleMatch[1] : "ブログ記事";
+
+    setupShareButton(file, title);
+    reloadUtterances(localStorage.getItem("theme") || getPreferredTheme());
+
   } catch (err) {
     document.getElementById("post-container").textContent = "記事を読み込めませんでした。";
   }
 }
 
-if (isPostPage) {
-  loadPost();
-} else {
-  loadPosts();
-}
-
-// 記事読み込みが終わったあとに実行
+// =========================
+// 共有ボタン設定
+// =========================
 function setupShareButton(file, title) {
   const shareBtn = document.getElementById("share-btn");
+  if (!shareBtn) return;
+
   const pageUrl = location.href;
   const text = `「${title}」を読んだよ！`;
-
   const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(pageUrl)}`;
-
   shareBtn.href = shareUrl;
 }
 
-async function loadPost() {
-  const params = new URLSearchParams(location.search);
-  const file = params.get("file");
-  if (!file) return;
+// =========================
+// テーマ関連処理
+// =========================
+const themeButton = document.querySelector("#theme");
 
-  try {
-    const res = await fetch(`./posts/${file}`);
-    const text = await res.text();
-    const html = marked.parse(text);
-    document.getElementById("post-container").innerHTML = html;
-
-    // タイトルをMarkdownの1行目から取る例
-    const titleMatch = text.match(/^#\s*(.+)/);
-    const title = titleMatch ? titleMatch[1] : "ブログ記事";
-    setupShareButton(file, title);
-
-  } catch (err) {
-    document.getElementById("post-container").textContent = "記事を読み込めませんでした。";
-  }
+function getPreferredTheme() {
+  return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
 }
 
-
-const themeButton = document.querySelector('#theme');
-
-// テーマ適用関数
 function applyTheme(theme) {
-  if (theme === 'dark') {
-    document.body.classList.add('dark-mode');
-    themeButton.textContent = 'light_mode';
-  } else {
-    document.body.classList.remove('dark-mode');
-    themeButton.textContent = 'dark_mode';
-  }
+  document.body.classList.toggle("dark-mode", theme === "dark");
+  if (themeButton) themeButton.textContent = theme === "dark" ? "light_mode" : "dark_mode";
+  localStorage.setItem("theme", theme);
+  reloadUtterances(theme); // コメントもテーマ更新
 }
 
-// 初期化（localStorage → OS設定）
-window.addEventListener('DOMContentLoaded', () => {
-  const savedTheme = localStorage.getItem('theme');
-  if (savedTheme) {
-    applyTheme(savedTheme);
-  } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    applyTheme('dark');
+function toggleTheme() {
+  const current = localStorage.getItem("theme") === "dark" ? "dark" : "light";
+  const next = current === "dark" ? "light" : "dark";
+  applyTheme(next);
+}
+
+if (themeButton) {
+  themeButton.addEventListener("click", toggleTheme);
+}
+
+// =========================
+// utterances（コメント）再読み込み
+// =========================
+function reloadUtterances(theme) {
+  const comments = document.getElementById("comments");
+  if (!comments) return;
+
+  // 既存を削除
+  comments.innerHTML = "";
+
+  const params = new URLSearchParams(location.search);
+  const file = params.get("file") || location.pathname;
+
+  // スクリプトを生成
+  const script = document.createElement("script");
+  script.src = "https://utteranc.es/client.js";
+  script.async = true;
+  script.crossOrigin = "anonymous";
+  script.setAttribute("repo", "5l3ep/sl3ep.site"); // ← 自分のGitHubリポジトリ名に変更
+  script.setAttribute("issue-term", file);
+  script.setAttribute("label", "💬 Comment");
+  script.setAttribute("theme", theme === "dark" ? "dark-blue" : "github-light");
+  comments.appendChild(script);
+}
+
+// =========================
+// ページ初期化処理
+// =========================
+window.addEventListener("DOMContentLoaded", () => {
+  const saved = localStorage.getItem("theme");
+  const theme = saved || getPreferredTheme();
+  applyTheme(theme);
+
+  if (isPostPage) {
+    loadPost();
   } else {
-    applyTheme('light');
+    loadPosts();
   }
-});
-
-// クリックでテーマ切り替え＋保存＋再読み込み
-themeButton.addEventListener('click', () => {
-  const isDark = !document.body.classList.contains('dark-mode');
-  const newTheme = isDark ? 'dark' : 'light';
-  localStorage.setItem('theme', newTheme);
-  applyTheme(newTheme);
-
-  // コメント欄含めて再読み込み（確実にutterancesも反映）
-  location.reload();
-});
-
-
-// ページ読み込み時にテーマを復元
-window.addEventListener('DOMContentLoaded', () => {
-  const savedTheme = localStorage.getItem('theme');
-  if (savedTheme === 'dark') document.body.classList.add('dark-mode');
 });
