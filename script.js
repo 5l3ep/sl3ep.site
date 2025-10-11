@@ -110,7 +110,7 @@ function reloadUtterances(theme) {
   script.src = "https://utteranc.es/client.js";
   script.async = true;
   script.crossOrigin = "anonymous";
-  script.setAttribute("repo", "5l3ep/sl3ep.site"); // ← 自分のGitHubリポジトリ名に変更
+  script.setAttribute("repo", "5l3ep/sl3ep.site");
   script.setAttribute("issue-term", file);
   script.setAttribute("label", "💬 Comment");
   script.setAttribute("theme", theme === "dark" ? "dark-blue" : "github-light");
@@ -131,3 +131,41 @@ window.addEventListener("DOMContentLoaded", () => {
     loadPosts();
   }
 });
+
+// =========================
+// ブログを検索
+// =========================
+let allPosts = [];
+
+async function loadPosts() {
+  const res = await fetch("posts.json");
+  allPosts = await res.json();
+  renderPosts(allPosts);
+}
+
+function renderPosts(posts) {
+  const list = document.getElementById("post-list");
+  list.innerHTML = posts.map(p => `
+    <div class="post-item">
+      <img src="${p.thumbnail}" alt="${p.title}" class="thumb">
+      <div class="post-info">
+        <h2><a href="post.html?file=${p.file}">${p.title}</a></h2>
+        <p class="date">${p.date}</p>
+        <div class="tags">
+          ${p.tags.map(tag => `<span class="tag">${tag}</span>`).join(" ")}
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+
+document.getElementById("search").addEventListener("input", e => {
+  const q = e.target.value.toLowerCase();
+  const filtered = allPosts.filter(p =>
+    p.title.toLowerCase().includes(q) ||
+    p.tags.some(tag => tag.toLowerCase().includes(q))
+  );
+  renderPosts(filtered);
+});
+
+loadPosts();

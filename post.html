@@ -22,11 +22,29 @@
     </header>
     <a href="./index.html">< 一覧に戻る</a>
     <div id="post-container">読み込み中...</div>
+    <button id="like-btn">❤️ いいね</button>
+    <p id="like-count">0</p>
+    <script type="module">
+    import { supabase, getUserId, loadLikeCount, toggleLike } from "./supa.js";
+    const postId = new URLSearchParams(location.search).get("file") || "default";
+    const uid = getUserId();
+    const likeBtn = document.getElementById("like-btn");
+    const likeCountEl = document.getElementById("like-count");
+    async function updateLikes() {
+      const count = await loadLikeCount(postId);
+    likeCountEl.textContent = count;
+    }
+    likeBtn.addEventListener("click", async () => {
+      const liked = await toggleLike(postId, uid);
+    likeBtn.textContent = liked ? "💖 いいね済み" : "🤍 いいね";
+    updateLikes();
+  });
+  updateLikes();
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <a id="share-btn" class="share-btn" target="_blank" rel="noopener noreferrer">
       <img id="x-logo" src="./images/d_x.png" alt="Xで共有"> Xで共有
     </a>
-    <div id="comments"></div>
     <div id="comments"></div> <!-- コメント -->
     <script src="./script.js"></script>
   </body>

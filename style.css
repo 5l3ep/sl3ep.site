@@ -1,3 +1,4 @@
+/* 基本のCSS */
 html {
   scroll-behavior: smooth;
 }
@@ -203,4 +204,27 @@ a:hover {
 
 .dark-mode .share-btn:hover {
   background: #1a8cd8;
+}
+
+
+#search {
+  /* ▼ サイズと形 */
+  width: 500px; /* 幅は好きなサイズに調整してね */
+  padding: 13px 20px 13px 45px; /* 内側の余白。左側はアイコンを置くために広めに取る */
+  font-size: 16px; /* 文字の大きさ */
+  border-radius: 24px; /* 角を丸くする。数値を大きくするともっと丸くなるよ */
+  border: 1px solid #d0d7de;
+  outline: none; /* クリックした時に出る青い枠線を消す */
+  /* ▼ 検索アイコンの設定 */
+  /* SVGっていう画像データを直接CSSに埋め込んでる */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%239aa0a6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E");
+  background-repeat: no-repeat; /* アイコンが繰り返し表示されるのを防ぐ */
+  background-position: 15px center; /* アイコンの位置を「左から15px、上下中央」に設定 */
+  /* ▼ アニメーション効果 */
+  transition: box-shadow 0.2s ease; /* 影（box-shadow）の変化を0.2秒かけて滑らかにする */
+}
+
+/* ▼ プレースホルダー（入力欄の薄い文字）のスタイル */
+#search::placeholder {
+  color: #80868b; /* 少し薄いグレーに */
 }
