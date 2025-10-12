@@ -1,23 +1,30 @@
 [
   {
+    "title": "ブログにいいね機能を追加した",
+    "file": "4th.md",
+    "date": "2025-10-12",
+    "tags": ["Update", "Supabase"],
+    "thumbnail": "./tn/4th_tn.jpg"
+  },
+  {
     "title": "ブログにコメント機能を追加してみた",
-    "file": "blogcomment.md",
+    "file": "3rd.md",
     "date": "2025-10-05",
-    "tags": ["技術系", "JS"],
-    "thumbnail": "./images/3rd_tn.jpg"
+    "tags": ["Update", "JS"],
+    "thumbnail": "./tn/3rd_tn.jpg"
   },
   {
     "title": "好きな曲の紹介",
     "file": "favsong.md",
     "date": "2025-10-04",
     "tags": ["好きな曲", "自己紹介"],
-    "thumbnail": "./images/2nd_tn.jpg"
+    "thumbnail": "./tn/2nd_tn.jpg"
   },
   {
     "title": "初めまして",
     "file": "hello.md",
     "date": "2025-10-04",
     "tags": ["自己紹介", "Web"],
-    "thumbnail": "./images/1st_tn.jpg"
+    "thumbnail": "./tn/1st_tn.jpg"
   }
 ]
