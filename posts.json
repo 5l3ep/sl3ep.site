@@ -15,14 +15,14 @@
   },
   {
     "title": "好きな曲の紹介",
-    "file": "favsong.md",
+    "file": "2nd.md",
     "date": "2025-10-04",
     "tags": ["好きな曲", "自己紹介"],
     "thumbnail": "./tn/2nd_tn.jpg"
   },
   {
     "title": "初めまして",
-    "file": "hello.md",
+    "file": "1st.md",
     "date": "2025-10-04",
     "tags": ["自己紹介", "Web"],
     "thumbnail": "./tn/1st_tn.jpg"

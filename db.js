@@ -1,8 +1,11 @@
-// =====================
-// supa.jsを読み込み
-// =====================
-import { supabase } from "./supa.js";
+// =========================
+// supabase
+// =========================
+import { supabase } from './supa.js';
 
+// =========================
+// post.htmlのみ実行
+// =========================
 if (location.pathname.includes("post.html")) {
   window.addEventListener("DOMContentLoaded", async () => {
     const params = new URLSearchParams(location.search);
@@ -13,12 +16,18 @@ if (location.pathname.includes("post.html")) {
     const likeCountEl = document.getElementById("like-count");
     if (!likeBtn || !likeCountEl) return;
 
-    const postId = file; // 記事のID
-    const userId = "test-user"; // 仮のユーザーID
+    const postId = file;
 
-// =====================
-// いいね数を更新
-// =====================
+    // ブラウザごとに一意のuserIdを生成
+    let userId = localStorage.getItem("user-id");
+    if (!userId) {
+      userId = "user-" + Math.random().toString(36).substring(2, 9);
+      localStorage.setItem("user-id", userId);
+    }
+
+    // =========================
+    // 現在のいいね数＋状態を取得
+    // =========================
     async function updateLikeCount() {
       const { data, error } = await supabase
         .from("likes")
@@ -26,63 +35,67 @@ if (location.pathname.includes("post.html")) {
         .eq("post_id", postId);
 
       if (error) {
-        console.error("いいね数の取得に失敗:", error);
+        console.error("Failed to fetch like count:", error);
         return;
       }
 
-      // 件数表示
       likeCountEl.textContent = data.length;
 
-      // このユーザーが押してるか判定
-      const isLiked = data.some((row) => row.user_id === userId);
-      likeBtn.classList.toggle("liked", isLiked);
-    }
-
-// =====================
-// いいねトグルの処理
-// =====================
-    async function toggleLike() {
-      // 今の状態を確認
-      const { data, error } = await supabase
+      // 自分がいいね済みか確認してボタンの色を更新
+      const { data: liked } = await supabase
         .from("likes")
         .select("*")
         .eq("post_id", postId)
         .eq("user_id", userId);
 
-      if (error) {
-        console.error("いいね確認に失敗:", error);
-        return;
-      }
+      const isLiked = liked.length > 0;
+      likeBtn.classList.toggle("liked", isLiked);
+    }
+
+    // =========================
+    // いいねボタン押下
+    // =========================
+    async function toggleLike() {
+      const { data } = await supabase
+        .from("likes")
+        .select("*")
+        .eq("post_id", postId)
+        .eq("user_id", userId);
 
       if (data.length > 0) {
-        // すでに押してる → 削除
-        const { error: delError } = await supabase
+        await supabase
           .from("likes")
           .delete()
           .eq("post_id", postId)
           .eq("user_id", userId);
-
-        if (delError) {
-          console.error("いいね削除失敗:", delError);
-        }
       } else {
-        // 押してない → 追加
-        const { error: insError } = await supabase
+        await supabase
           .from("likes")
           .insert({ post_id: postId, user_id: userId });
-
-        if (insError) {
-          console.error("いいね追加失敗:", insError);
-        }
       }
 
-      // 状態更新
-      updateLikeCount();
+      await updateLikeCount();
     }
 
-// =====================
-// 初期化
-// =====================
+    // =========================
+    // リアルタイム反映
+    // =========================
+    supabase
+      .channel("likes-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "likes" },
+        async (payload) => {
+          if (payload.new?.post_id === postId || payload.old?.post_id === postId) {
+            await updateLikeCount();
+          }
+        }
+      )
+      .subscribe();
+
+    // =========================
+    // 初期処理
+    // =========================
     await updateLikeCount();
     likeBtn.addEventListener("click", toggleLike);
   });
